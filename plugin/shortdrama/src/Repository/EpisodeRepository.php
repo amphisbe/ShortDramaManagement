@@ -16,6 +16,11 @@ final class EpisodeRepository
 
     public function query(array $params = []): Builder
     {
+        $keyword = Arr::get($params, 'keyword');
+        $keyword = is_string($keyword) ? trim($keyword) : null;
+        $createdAt = Arr::get($params, 'created_at');
+        $createdAt = $this->validDateRange($createdAt) ? $createdAt : null;
+
         return $this->model->newQuery()
             ->when(Arr::exists($params, 'drama_id'), static function (Builder $query) use ($params): void {
                 $query->where('drama_id', Arr::get($params, 'drama_id'));
@@ -23,18 +28,29 @@ final class EpisodeRepository
             ->when(Arr::exists($params, 'status'), static function (Builder $query) use ($params): void {
                 $query->where('status', Arr::get($params, 'status'));
             })
-            ->when(Arr::get($params, 'keyword'), static function (Builder $query, string $keyword): void {
+            ->when($keyword !== null && $keyword !== '', static function (Builder $query) use ($keyword): void {
                 $query->where(static function (Builder $query) use ($keyword): void {
                     $query->where('title', 'like', '%' . $keyword . '%')
                         ->orWhere('external_video_id', 'like', '%' . $keyword . '%');
                 });
             })
-            ->when(Arr::get($params, 'created_at'), static function (Builder $query, array $range): void {
+            ->when($createdAt !== null, static function (Builder $query) use ($createdAt): void {
                 $query->whereBetween('created_at', [
-                    $range[0] . ' 00:00:00',
-                    $range[1] . ' 23:59:59',
+                    trim($createdAt[0]) . ' 00:00:00',
+                    trim($createdAt[1]) . ' 23:59:59',
                 ]);
             });
+    }
+
+    private function validDateRange(mixed $range): bool
+    {
+        return is_array($range)
+            && count($range) >= 2
+            && isset($range[0], $range[1])
+            && is_string($range[0])
+            && is_string($range[1])
+            && trim($range[0]) !== ''
+            && trim($range[1]) !== '';
     }
 
     public function page(array $params, ?int $page = null, ?int $pageSize = null): array

@@ -24,9 +24,9 @@ final class ModelContractTest extends TestCase
                 new Drama(),
                 'dramas',
                 [
-                    'id', 'external_drama_id', 'title', 'display_author_name', 'author_user_id',
+                    'external_drama_id', 'title', 'display_author_name', 'author_user_id',
                     'total_episodes', 'cover_url', 'vip_free', 'status', 'description', 'category',
-                    'tags', 'play_count', 'follow_count', 'created_at', 'updated_at',
+                    'tags', 'play_count', 'follow_count',
                 ],
                 [
                     'id' => 'integer',
@@ -44,11 +44,11 @@ final class ModelContractTest extends TestCase
                 new DramaEpisode(),
                 'drama_episodes',
                 [
-                    'id', 'drama_id', 'external_video_id', 'episode_no', 'title', 'play_url',
+                    'drama_id', 'external_video_id', 'episode_no', 'title', 'play_url',
                     'poster_url', 'duration_seconds', 'sort_order', 'status', 'display_nickname',
                     'loop', 'play_ing', 'muted', 'is_playing', 'show_title_arrow',
                     'show_look_all_btn', 'look_all_btn_text', 'show_bottom_area',
-                    'bottom_area_btn_text', 'tool_info_json', 'created_at', 'updated_at',
+                    'bottom_area_btn_text', 'tool_info_json',
                 ],
                 [
                     'id' => 'integer',
@@ -72,7 +72,7 @@ final class ModelContractTest extends TestCase
             'app user' => [
                 new AppUser(),
                 'users',
-                ['id', 'external_user_id', 'nickname', 'avatar_url', 'status', 'created_at', 'updated_at'],
+                ['external_user_id', 'nickname', 'avatar_url', 'status'],
                 [
                     'id' => 'integer',
                     'status' => 'integer',
@@ -85,7 +85,7 @@ final class ModelContractTest extends TestCase
                 'drama_episode_stats',
                 [
                     'episode_id', 'like_count', 'comment_count', 'share_count', 'play_count',
-                    'favorite_count', 'created_at', 'updated_at',
+                    'favorite_count',
                 ],
                 [
                     'episode_id' => 'integer',
@@ -134,10 +134,41 @@ final class ModelContractTest extends TestCase
 
     public function testDramaRelationshipsUseExpectedRelationTypes(): void
     {
+        $author = (new Drama())->author();
+
         self::assertInstanceOf(HasMany::class, (new Drama())->episodes());
+        self::assertInstanceOf(BelongsTo::class, $author);
+        self::assertSame('author_user_id', $author->getForeignKeyName());
+        self::assertInstanceOf(AppUser::class, $author->getRelated());
         self::assertInstanceOf(BelongsTo::class, (new DramaEpisode())->drama());
         self::assertInstanceOf(HasOne::class, (new DramaEpisode())->stats());
         self::assertInstanceOf(BelongsTo::class, (new DramaEpisodeStat())->episode());
+    }
+
+    public function testMassAssignmentCannotOverrideManagedColumns(): void
+    {
+        foreach ([new Drama(), new DramaEpisode(), new AppUser()] as $model) {
+            $model->fill([
+                'id' => 99,
+                'created_at' => '2026-01-01 00:00:00',
+                'updated_at' => '2026-01-02 00:00:00',
+            ]);
+
+            self::assertNull($model->getAttribute('id'));
+            self::assertNull($model->getAttribute('created_at'));
+            self::assertNull($model->getAttribute('updated_at'));
+        }
+
+        $stat = new DramaEpisodeStat();
+        $stat->fill([
+            'episode_id' => 7,
+            'created_at' => '2026-01-01 00:00:00',
+            'updated_at' => '2026-01-02 00:00:00',
+        ]);
+
+        self::assertSame(7, $stat->getAttribute('episode_id'));
+        self::assertNull($stat->getAttribute('created_at'));
+        self::assertNull($stat->getAttribute('updated_at'));
     }
 
     public function testEpisodeStatUsesEpisodeIdAsNonIncrementingPrimaryKey(): void

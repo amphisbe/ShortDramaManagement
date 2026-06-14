@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Plugin\ShortDrama\Model;
 
+use Hyperf\Database\Model\Relations\BelongsTo;
 use Hyperf\Database\Model\Relations\HasMany;
 use Hyperf\DbConnection\Model\Model;
 
@@ -24,9 +25,9 @@ final class Drama extends Model
     protected ?string $table = 'dramas';
 
     protected array $fillable = [
-        'id', 'external_drama_id', 'title', 'display_author_name', 'author_user_id',
+        'external_drama_id', 'title', 'display_author_name', 'author_user_id',
         'total_episodes', 'cover_url', 'vip_free', 'status', 'description', 'category',
-        'tags', 'play_count', 'follow_count', 'created_at', 'updated_at',
+        'tags', 'play_count', 'follow_count',
     ];
 
     protected array $casts = [
@@ -44,5 +45,10 @@ final class Drama extends Model
     public function episodes(): HasMany
     {
         return $this->hasMany(DramaEpisode::class, 'drama_id');
+    }
+
+    public function author(): BelongsTo
+    {
+        return $this->belongsTo(AppUser::class, 'author_user_id');
     }
 }

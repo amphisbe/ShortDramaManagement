@@ -21,7 +21,7 @@ final class DramaEpisodeStat extends Model
 
     protected array $fillable = [
         'episode_id', 'like_count', 'comment_count', 'share_count', 'play_count',
-        'favorite_count', 'created_at', 'updated_at',
+        'favorite_count',
     ];
 
     protected array $casts = [

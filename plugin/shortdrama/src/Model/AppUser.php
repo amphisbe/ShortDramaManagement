@@ -19,7 +19,7 @@ final class AppUser extends Model
     protected ?string $table = 'users';
 
     protected array $fillable = [
-        'id', 'external_user_id', 'nickname', 'avatar_url', 'status', 'created_at', 'updated_at',
+        'external_user_id', 'nickname', 'avatar_url', 'status',
     ];
 
     protected array $casts = [

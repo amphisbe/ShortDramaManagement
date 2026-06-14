@@ -21,11 +21,11 @@ final class DramaEpisode extends Model
     protected ?string $table = 'drama_episodes';
 
     protected array $fillable = [
-        'id', 'drama_id', 'external_video_id', 'episode_no', 'title', 'play_url',
+        'drama_id', 'external_video_id', 'episode_no', 'title', 'play_url',
         'poster_url', 'duration_seconds', 'sort_order', 'status', 'display_nickname',
         'loop', 'play_ing', 'muted', 'is_playing', 'show_title_arrow',
         'show_look_all_btn', 'look_all_btn_text', 'show_bottom_area',
-        'bottom_area_btn_text', 'tool_info_json', 'created_at', 'updated_at',
+        'bottom_area_btn_text', 'tool_info_json',
     ];
 
     protected array $casts = [

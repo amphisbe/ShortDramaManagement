@@ -26,6 +26,17 @@ final class RepositoryContractTest extends TestCase
         ];
     }
 
+    public static function invalidDateRangeProvider(): array
+    {
+        return [
+            'string' => ['2026-01-01'],
+            'empty array' => [[]],
+            'single endpoint' => [['2026-01-01']],
+            'empty start' => [['', '2026-01-31']],
+            'empty end' => [['2026-01-01', '']],
+        ];
+    }
+
     #[DataProvider('repositoryProvider')]
     public function testRepositoriesExposeNoBusinessDeletionApi(string $repositoryClass, object $model): void
     {
@@ -112,5 +123,52 @@ final class RepositoryContractTest extends TestCase
             [0, '%alice%', '%alice%', '2026-03-01 00:00:00', '2026-03-31 23:59:59'],
             $query->getBindings()
         );
+    }
+
+    #[DataProvider('repositoryProvider')]
+    public function testRepositoriesFilterKeywordZero(string $repositoryClass, object $model): void
+    {
+        $query = (new $repositoryClass($model))->query(['keyword' => '0']);
+
+        self::assertStringContainsString(' like ', strtolower($query->toSql()));
+        self::assertSame(['%0%', '%0%'], $query->getBindings());
+    }
+
+    #[DataProvider('repositoryProvider')]
+    public function testRepositoriesApplyValidCreatedAtRange(string $repositoryClass, object $model): void
+    {
+        $query = (new $repositoryClass($model))->query([
+            'created_at' => ['2026-04-01', '2026-04-30'],
+        ]);
+
+        self::assertStringContainsString('between', strtolower($query->toSql()));
+        self::assertSame(
+            ['2026-04-01 00:00:00', '2026-04-30 23:59:59'],
+            $query->getBindings()
+        );
+    }
+
+    #[DataProvider('repositoryAndInvalidDateRangeProvider')]
+    public function testRepositoriesIgnoreInvalidCreatedAtRange(
+        string $repositoryClass,
+        object $model,
+        mixed $createdAt
+    ): void {
+        $query = (new $repositoryClass($model))->query(['created_at' => $createdAt]);
+
+        self::assertStringNotContainsString('between', strtolower($query->toSql()));
+        self::assertSame([], $query->getBindings());
+    }
+
+    public static function repositoryAndInvalidDateRangeProvider(): array
+    {
+        $cases = [];
+        foreach (self::repositoryProvider() as $repositoryName => [$repositoryClass, $model]) {
+            foreach (self::invalidDateRangeProvider() as $rangeName => [$createdAt]) {
+                $cases[$repositoryName . ' / ' . $rangeName] = [$repositoryClass, $model, $createdAt];
+            }
+        }
+
+        return $cases;
     }
 }
