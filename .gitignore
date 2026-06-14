@@ -1,0 +1,27 @@
+# MineAdmin 框架 (composer)
+/vendor/
+/.env
+
+# Node
+/web/node_modules/
+/web/dist/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+/runtime/logs/
+*.log
+
+# Temp
+/tmp/
+/runtime/container/
+.superpowers/
+.worktrees/
