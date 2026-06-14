@@ -4,13 +4,17 @@ declare(strict_types=1);
 
 namespace Plugin\ShortDrama\Repository;
 
+use App\Exception\BusinessException;
+use App\Http\Common\ResultCode;
 use Hyperf\Collection\Arr;
 use Hyperf\Collection\Collection;
 use Hyperf\Database\Model\Builder;
+use Hyperf\DbConnection\Db;
 use Hyperf\Paginator\AbstractPaginator;
+use Plugin\ShortDrama\Contract\DramaRepositoryInterface;
 use Plugin\ShortDrama\Model\Drama;
 
-final class DramaRepository
+final class DramaRepository implements DramaRepositoryInterface
 {
     public function __construct(private readonly Drama $model) {}
 
@@ -89,5 +93,37 @@ final class DramaRepository
     public function updateById(mixed $id, array $data): bool
     {
         return (bool) $this->model->newQuery()->whereKey($id)->first()?->update($data);
+    }
+
+    public function existsExternalId(string $externalId, ?int $idExcept = null): bool
+    {
+        return $this->model->newQuery()
+            ->where('external_drama_id', $externalId)
+            ->when($idExcept !== null, static fn (Builder $query) => $query->where('id', '<>', $idExcept))
+            ->exists();
+    }
+
+    public function countByIds(array $ids): int
+    {
+        return $this->model->newQuery()->whereIn('id', $ids)->count();
+    }
+
+    public function updateStatusByIds(array $ids, int $status): int
+    {
+        return $this->model->newQuery()->whereIn('id', $ids)->update([
+            'status' => $status,
+            'updated_at' => date('Y-m-d H:i:s'),
+        ]);
+    }
+
+    public function batchUpdateStatus(array $ids, int $status): void
+    {
+        $ids = array_values(array_unique($ids));
+        Db::connection('drama')->transaction(function () use ($ids, $status): void {
+            if ($this->countByIds($ids) !== count($ids)) {
+                throw new BusinessException(ResultCode::NOT_FOUND);
+            }
+            $this->updateStatusByIds($ids, $status);
+        });
     }
 }

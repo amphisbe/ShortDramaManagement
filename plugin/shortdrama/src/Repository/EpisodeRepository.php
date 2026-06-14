@@ -4,13 +4,17 @@ declare(strict_types=1);
 
 namespace Plugin\ShortDrama\Repository;
 
+use App\Exception\BusinessException;
+use App\Http\Common\ResultCode;
 use Hyperf\Collection\Arr;
 use Hyperf\Collection\Collection;
 use Hyperf\Database\Model\Builder;
+use Hyperf\DbConnection\Db;
 use Hyperf\Paginator\AbstractPaginator;
+use Plugin\ShortDrama\Contract\EpisodeRepositoryInterface;
 use Plugin\ShortDrama\Model\DramaEpisode;
 
-final class EpisodeRepository
+final class EpisodeRepository implements EpisodeRepositoryInterface
 {
     public function __construct(private readonly DramaEpisode $model) {}
 
@@ -81,5 +85,46 @@ final class EpisodeRepository
     public function updateById(mixed $id, array $data): bool
     {
         return (bool) $this->model->newQuery()->whereKey($id)->first()?->update($data);
+    }
+
+    public function existsEpisodeNumber(int $dramaId, int $episodeNo, ?int $idExcept = null): bool
+    {
+        return $this->model->newQuery()
+            ->where('drama_id', $dramaId)
+            ->where('episode_no', $episodeNo)
+            ->when($idExcept !== null, static fn (Builder $query) => $query->where('id', '<>', $idExcept))
+            ->exists();
+    }
+
+    public function existsExternalVideoId(string $externalVideoId, ?int $idExcept = null): bool
+    {
+        return $this->model->newQuery()
+            ->where('external_video_id', $externalVideoId)
+            ->when($idExcept !== null, static fn (Builder $query) => $query->where('id', '<>', $idExcept))
+            ->exists();
+    }
+
+    public function countByIds(array $ids): int
+    {
+        return $this->model->newQuery()->whereIn('id', $ids)->count();
+    }
+
+    public function updateStatusByIds(array $ids, int $status): int
+    {
+        return $this->model->newQuery()->whereIn('id', $ids)->update([
+            'status' => $status,
+            'updated_at' => date('Y-m-d H:i:s'),
+        ]);
+    }
+
+    public function batchUpdateStatus(array $ids, int $status): void
+    {
+        $ids = array_values(array_unique($ids));
+        Db::connection('drama')->transaction(function () use ($ids, $status): void {
+            if ($this->countByIds($ids) !== count($ids)) {
+                throw new BusinessException(ResultCode::NOT_FOUND);
+            }
+            $this->updateStatusByIds($ids, $status);
+        });
     }
 }

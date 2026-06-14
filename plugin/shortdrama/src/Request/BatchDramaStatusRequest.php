@@ -6,4 +6,19 @@ namespace Plugin\ShortDrama\Request;
 
 use Hyperf\Validation\Request\FormRequest;
 
-class BatchDramaStatusRequest extends FormRequest {}
+class BatchDramaStatusRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'ids' => 'required|array|min:1',
+            'ids.*' => 'integer|min:1|distinct',
+            'status' => 'required|integer|in:0,1,2',
+        ];
+    }
+}
