@@ -1,0 +1,23 @@
+{
+  "name": "shortdrama/admin",
+  "version": "1.0.0",
+  "type": "mix",
+  "description": "短剧管理后台插件",
+  "author": [
+    {
+      "name": "ShortDrama Team"
+    }
+  ],
+  "composer": {
+    "require": {},
+    "psr-4": {
+      "Plugin\\ShortDrama\\": "src"
+    },
+    "installScript": "Plugin\\ShortDrama\\InstallScript",
+    "uninstallScript": "Plugin\\ShortDrama\\UninstallScript",
+    "config": "Plugin\\ShortDrama\\ConfigProvider"
+  },
+  "package": {
+    "dependencies": {}
+  }
+}

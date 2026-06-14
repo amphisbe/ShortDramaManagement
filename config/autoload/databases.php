@@ -14,6 +14,15 @@ use Hyperf\Database\Commands\Ast\ModelRewriteSoftDeletesVisitor;
 use Hyperf\Database\Commands\Ast\ModelRewriteTimestampsVisitor;
 use Hyperf\ModelCache\Handler\RedisHandler;
 
+$defaultPool = [
+    'min_connections' => 1,
+    'max_connections' => 20,
+    'connect_timeout' => 10.0,
+    'wait_timeout' => 3.0,
+    'heartbeat' => -1,
+    'max_idle_time' => (float) env('DB_MAX_IDLE_TIME', 60),
+];
+
 return [
     'default' => [
         'driver' => env('DB_DRIVER', 'mysql'),
@@ -27,14 +36,7 @@ return [
         'charset' => env('DB_CHARSET', 'utf8mb4'),
         'collation' => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
         'prefix' => env('DB_PREFIX', ''),
-        'pool' => [
-            'min_connections' => 1,
-            'max_connections' => 20,
-            'connect_timeout' => 10.0,
-            'wait_timeout' => 3.0,
-            'heartbeat' => -1,
-            'max_idle_time' => (float) env('DB_MAX_IDLE_TIME', 60),
-        ],
+        'pool' => $defaultPool,
         'cache' => [
             'handler' => RedisHandler::class,
             'cache_key' => 'MineAdmin:%s:m:%s:%s:%s',
@@ -58,5 +60,17 @@ return [
                 ],
             ],
         ],
+    ],
+    'drama' => [
+        'driver' => 'mysql',
+        'host' => env('DRAMA_DB_HOST', '127.0.0.1'),
+        'port' => (int) env('DRAMA_DB_PORT', 3306),
+        'database' => env('DRAMA_DB_DATABASE', 'drama'),
+        'username' => env('DRAMA_DB_USERNAME', 'root'),
+        'password' => env('DRAMA_DB_PASSWORD', ''),
+        'charset' => 'utf8mb4',
+        'collation' => 'utf8mb4_unicode_ci',
+        'prefix' => '',
+        'pool' => $defaultPool,
     ],
 ];
