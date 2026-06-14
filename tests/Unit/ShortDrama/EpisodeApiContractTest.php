@@ -49,6 +49,7 @@ final class EpisodeApiContractTest extends TestCase
         self::assertSame('required|integer|min:1', $post['drama_id']);
         self::assertSame('sometimes|integer|min:1', $put['drama_id']);
         self::assertSame('required|string|max:24', $post['external_video_id']);
+        self::assertSame('required|string|max:100', $post['display_nickname']);
         self::assertSame('required|integer|in:0,1', $post['loop']);
         self::assertSame('required|string', $post['tool_info_json']);
         self::assertSame('required|integer|in:0,1', (new ReflectionClass(BatchEpisodeStatusRequest::class))->newInstanceWithoutConstructor()->rules()['status']);

@@ -27,7 +27,7 @@ class EpisodeRequest extends FormRequest
             'duration_seconds' => "{$presence}|integer|min:0",
             'sort_order' => "{$presence}|integer|min:0",
             'status' => "{$presence}|integer|in:0,1",
-            'display_nickname' => "{$presence}|string|max:255",
+            'display_nickname' => "{$presence}|string|max:100",
             'loop' => "{$presence}|integer|in:0,1",
             'play_ing' => "{$presence}|integer|in:0,1",
             'muted' => "{$presence}|integer|in:0,1",
