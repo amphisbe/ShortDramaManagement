@@ -7,9 +7,10 @@ namespace Plugin\ShortDrama\Service;
 use App\Exception\BusinessException;
 use App\Http\Common\ResultCode;
 use Plugin\ShortDrama\Contract\DramaRepositoryInterface;
+use Plugin\ShortDrama\Contract\DramaWriterInterface;
 use Plugin\ShortDrama\Model\Drama;
 
-final class DramaService
+final class DramaService implements DramaWriterInterface
 {
     private const FIELDS = [
         'external_drama_id', 'title', 'display_author_name', 'author_user_id',

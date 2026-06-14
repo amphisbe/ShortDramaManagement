@@ -8,9 +8,10 @@ use Hyperf\Collection\Arr;
 use Hyperf\Collection\Collection;
 use Hyperf\Database\Model\Builder;
 use Hyperf\Paginator\AbstractPaginator;
+use Plugin\ShortDrama\Contract\AppUserRepositoryInterface;
 use Plugin\ShortDrama\Model\AppUser;
 
-final class AppUserRepository
+final class AppUserRepository implements AppUserRepositoryInterface
 {
     public function __construct(private readonly AppUser $model) {}
 
@@ -22,6 +23,10 @@ final class AppUserRepository
         $createdAt = $this->validDateRange($createdAt) ? $createdAt : null;
 
         return $this->model->newQuery()
+            ->select('users.*')
+            ->selectRaw('(SELECT COUNT(*) FROM user_episode_likes WHERE user_episode_likes.user_id = users.id) AS like_count')
+            ->selectRaw('(SELECT COUNT(*) FROM user_drama_favorites WHERE user_drama_favorites.user_id = users.id) AS favorite_count')
+            ->selectRaw('(SELECT COUNT(*) FROM user_episode_progress WHERE user_episode_progress.user_id = users.id) AS progress_count')
             ->when(Arr::exists($params, 'status'), static function (Builder $query) use ($params): void {
                 $query->where('status', Arr::get($params, 'status'));
             })
@@ -70,13 +75,11 @@ final class AppUserRepository
         return $this->query()->whereKey($id)->first();
     }
 
-    public function create(array $data): AppUser
+    public function updateStatus(int $id, int $status): bool
     {
-        return $this->model->newQuery()->create($data);
-    }
-
-    public function updateById(mixed $id, array $data): bool
-    {
-        return (bool) $this->model->newQuery()->whereKey($id)->first()?->update($data);
+        return (bool) $this->model->newQuery()->whereKey($id)->update([
+            'status' => $status,
+            'updated_at' => date('Y-m-d H:i:s'),
+        ]);
     }
 }

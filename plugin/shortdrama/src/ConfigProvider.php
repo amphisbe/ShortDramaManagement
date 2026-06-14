@@ -5,9 +5,17 @@ declare(strict_types=1);
 namespace Plugin\ShortDrama;
 
 use Plugin\ShortDrama\Contract\DramaRepositoryInterface;
+use Plugin\ShortDrama\Contract\DramaWriterInterface;
+use Plugin\ShortDrama\Contract\AppUserRepositoryInterface;
+use Plugin\ShortDrama\Contract\DashboardRepositoryInterface;
 use Plugin\ShortDrama\Contract\EpisodeRepositoryInterface;
+use Plugin\ShortDrama\Contract\EpisodeWriterInterface;
+use Plugin\ShortDrama\Repository\AppUserRepository;
+use Plugin\ShortDrama\Repository\DashboardRepository;
 use Plugin\ShortDrama\Repository\DramaRepository;
 use Plugin\ShortDrama\Repository\EpisodeRepository;
+use Plugin\ShortDrama\Service\DramaService;
+use Plugin\ShortDrama\Service\EpisodeService;
 
 class ConfigProvider
 {
@@ -17,6 +25,10 @@ class ConfigProvider
             'dependencies' => [
                 DramaRepositoryInterface::class => DramaRepository::class,
                 EpisodeRepositoryInterface::class => EpisodeRepository::class,
+                AppUserRepositoryInterface::class => AppUserRepository::class,
+                DashboardRepositoryInterface::class => DashboardRepository::class,
+                DramaWriterInterface::class => DramaService::class,
+                EpisodeWriterInterface::class => EpisodeService::class,
             ],
             'annotations' => [
                 'scan' => [

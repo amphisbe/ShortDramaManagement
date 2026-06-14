@@ -7,9 +7,10 @@ namespace Plugin\ShortDrama\Service;
 use App\Exception\BusinessException;
 use App\Http\Common\ResultCode;
 use Plugin\ShortDrama\Contract\EpisodeRepositoryInterface;
+use Plugin\ShortDrama\Contract\EpisodeWriterInterface;
 use Plugin\ShortDrama\Model\DramaEpisode;
 
-final class EpisodeService
+final class EpisodeService implements EpisodeWriterInterface
 {
     private const FIELDS = [
         'drama_id', 'external_video_id', 'episode_no', 'title', 'play_url',
