@@ -58,7 +58,7 @@ class DatabaseConfigTest extends TestCase
         self::assertContains(dirname($providerPath), $config['annotations']['scan']['paths']);
     }
 
-    public function testInstallAndUninstallScriptsAreSafeNoOps(): void
+    public function testInstallAndUninstallScriptsAreAvailable(): void
     {
         $scriptPaths = [
             BASE_PATH . '/plugin/shortdrama/src/InstallScript.php',
@@ -70,12 +70,12 @@ class DatabaseConfigTest extends TestCase
             require_once $scriptPath;
         }
 
+        self::assertIsCallable(new \Plugin\ShortDrama\InstallScript());
+
         ob_start();
-        $installResult = (new \Plugin\ShortDrama\InstallScript())();
         $uninstallResult = (new \Plugin\ShortDrama\UninstallScript())();
         $output = ob_get_clean();
 
-        self::assertNull($installResult);
         self::assertNull($uninstallResult);
         self::assertSame('', $output);
     }

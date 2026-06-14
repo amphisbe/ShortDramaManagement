@@ -2,14 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Plugin\ShortDrama;
-
+use Hyperf\Database\Seeders\Seeder;
 use Plugin\ShortDrama\Installer\ModelInstallStore;
 use Plugin\ShortDrama\Installer\ShortDramaInstaller;
 
-class InstallScript
+class ShortDramaMenuSeeder extends Seeder
 {
-    public function __invoke(): void
+    public function run(): void
     {
         (new ShortDramaInstaller(new ModelInstallStore()))->install();
     }
