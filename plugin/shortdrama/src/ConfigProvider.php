@@ -10,6 +10,8 @@ use Plugin\ShortDrama\Contract\AppUserRepositoryInterface;
 use Plugin\ShortDrama\Contract\DashboardRepositoryInterface;
 use Plugin\ShortDrama\Contract\EpisodeRepositoryInterface;
 use Plugin\ShortDrama\Contract\EpisodeWriterInterface;
+use Plugin\ShortDrama\Contract\ObjectStorage;
+use Plugin\ShortDrama\Infrastructure\R2ClientFactory;
 use Plugin\ShortDrama\Repository\AppUserRepository;
 use Plugin\ShortDrama\Repository\DashboardRepository;
 use Plugin\ShortDrama\Repository\DramaRepository;
@@ -29,6 +31,7 @@ class ConfigProvider
                 DashboardRepositoryInterface::class => DashboardRepository::class,
                 DramaWriterInterface::class => DramaService::class,
                 EpisodeWriterInterface::class => EpisodeService::class,
+                ObjectStorage::class => R2ClientFactory::class,
             ],
             'annotations' => [
                 'scan' => [
