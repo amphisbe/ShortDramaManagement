@@ -41,13 +41,14 @@ describe('批量上传页面', () => {
     expect(view).toContain('queue.prepare()')
     expect(view).toContain('queue.uploadReady()')
     expect(view).toContain('已上传/总集数')
+    expect(view).toContain('selectedDramaId.value = Number(dramas.value[0].id)')
   })
 
   it('文件表格支持移除等待项和重试失败项', () => {
     const table = source('views/upload/upload-table.vue')
 
-    expect(table).toContain("emit('remove'")
-    expect(table).toContain("emit('retry'")
+    expect(table).toContain('emit(\'remove\'')
+    expect(table).toContain('emit(\'retry\'')
     expect(table).toContain('失败原因')
   })
 })

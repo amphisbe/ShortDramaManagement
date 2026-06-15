@@ -2,6 +2,7 @@
 import type { UploadFile } from 'element-plus'
 import type { DramaVo } from '../../api/drama'
 import { ElMessage } from 'element-plus'
+import { computed, onMounted, ref } from 'vue'
 import { page as dramaPage } from '../../api/drama'
 import { useBatchUpload } from '../../composables/useBatchUpload'
 import UploadSummary from './upload-summary.vue'
@@ -28,6 +29,9 @@ async function loadDramas() {
   try {
     const response = await dramaPage({ page: 1, page_size: 200 })
     dramas.value = response.data.list
+    if (!selectedDramaId.value && dramas.value[0]?.id) {
+      selectedDramaId.value = Number(dramas.value[0].id)
+    }
   }
   catch {
     ElMessage.error('短剧列表加载失败，请稍后重试')
@@ -90,7 +94,7 @@ onMounted(loadDramas)
 </script>
 
 <template>
-  <div class="upload-page mine-layout">
+  <div class="mine-layout upload-page">
     <header class="page-heading">
       <div>
         <p class="page-eyebrow">

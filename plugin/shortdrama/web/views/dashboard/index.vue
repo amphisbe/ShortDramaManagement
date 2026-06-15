@@ -52,7 +52,7 @@ onMounted(loadDashboard)
 </script>
 
 <template>
-  <div v-loading="loading" class="mine-layout shortdrama-dashboard">
+  <div v-loading="loading" class="shortdrama-dashboard mine-layout">
     <header class="page-heading">
       <div>
         <p class="page-eyebrow">

@@ -53,7 +53,7 @@ final class MediaUploadControllerTest extends TestCase
         $complete = (new ReflectionClass(MediaCompleteRequest::class))->newInstanceWithoutConstructor()->rules();
 
         self::assertSame('required|string|max:255', $presign['name']);
-        self::assertSame('required|integer|min:1', $presign['size']);
+        self::assertSame('required|integer|min:1|max:524288000', $presign['size']);
         self::assertSame('required|string|in:video/mp4,application/mp4', $presign['mime_type']);
         self::assertSame('required|string|size:64|regex:/^[a-f0-9]{64}$/i', $presign['sha256']);
         self::assertSame(['asset_id' => 'required|integer|min:1'], $complete);

@@ -57,7 +57,7 @@ final class MediaCheckControllerTest extends TestCase
 
         self::assertSame('required|array|min:1|max:200', $rules['files']);
         self::assertSame('required|string|max:255', $rules['files.*.name']);
-        self::assertSame('required|integer|min:1', $rules['files.*.size']);
+        self::assertSame('required|integer|min:1|max:524288000', $rules['files.*.size']);
         self::assertSame('required|string|in:video/mp4,application/mp4', $rules['files.*.mime_type']);
         self::assertSame('required|string|size:64|regex:/^[a-f0-9]{64}$/i', $rules['files.*.sha256']);
     }
