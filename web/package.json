@@ -33,6 +33,7 @@
     "echarts": "^5.5.1",
     "element-plus": "^2.9.1",
     "floating-vue": "5.2.2",
+    "hash-wasm": "4.12.0",
     "lodash-es": "^4.17.21",
     "md-editor-v3": "^5.0.2",
     "nprogress": "^0.2.0",
