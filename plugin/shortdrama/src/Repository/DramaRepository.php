@@ -85,6 +85,11 @@ final class DramaRepository implements DramaRepositoryInterface
         return $this->query()->whereKey($id)->first();
     }
 
+    public function findByExternalId(string $externalId): ?Drama
+    {
+        return $this->model->newQuery()->where('external_drama_id', $externalId)->first();
+    }
+
     public function create(array $data): Drama
     {
         return $this->model->newQuery()->create($data);

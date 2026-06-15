@@ -12,6 +12,8 @@ interface DramaRepositoryInterface
 
     public function findById(mixed $id): ?Drama;
 
+    public function findByExternalId(string $externalId): ?Drama;
+
     public function create(array $data): Drama;
 
     public function updateById(mixed $id, array $data): bool;

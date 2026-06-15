@@ -10,11 +10,12 @@ use Hyperf\Database\Exception\QueryException;
 use Hyperf\Database\Model\Builder;
 use Hyperf\DbConnection\Db;
 use Plugin\ShortDrama\Contract\ObjectStorage;
+use Plugin\ShortDrama\Contract\MediaAssetRepositoryInterface;
 use Plugin\ShortDrama\Domain\MediaAssetReservationPolicy;
 use Plugin\ShortDrama\Exception\MediaAssetReservationConflict;
 use Plugin\ShortDrama\Model\MediaAsset;
 
-final class MediaAssetRepository
+final class MediaAssetRepository implements MediaAssetRepositoryInterface
 {
     public function __construct(
         private readonly MediaAsset $model,
@@ -69,6 +70,16 @@ final class MediaAssetRepository
     public function findByIdForUpdate(int $id): ?MediaAsset
     {
         return $this->model->newQuery()->whereKey($id)->lockForUpdate()->first();
+    }
+
+    public function existsObjectKey(string $objectKey): bool
+    {
+        return $this->model->newQuery()->where('object_key', $objectKey)->exists();
+    }
+
+    public function existsSha256(string $sha256): bool
+    {
+        return $this->model->newQuery()->where('sha256', $sha256)->exists();
     }
 
     private function conflictQuery(array $attributes): Builder
