@@ -24,6 +24,11 @@ final class MediaAssetRepository implements MediaAssetRepositoryInterface
     ) {
     }
 
+    public function transaction(callable $callback): mixed
+    {
+        return Db::connection('drama')->transaction($callback);
+    }
+
     public function reserve(array $attributes): MediaAsset
     {
         try {
@@ -80,6 +85,27 @@ final class MediaAssetRepository implements MediaAssetRepositoryInterface
     public function existsSha256(string $sha256): bool
     {
         return $this->model->newQuery()->where('sha256', $sha256)->exists();
+    }
+
+    public function markUploaded(MediaAsset $asset, int $episodeId): void
+    {
+        $asset->fill([
+            'episode_id' => $episodeId,
+            'status' => MediaAsset::STATUS_UPLOADED,
+            'failure_reason' => null,
+            'reservation_expires_at' => null,
+        ]);
+        $asset->save();
+    }
+
+    public function markFailed(MediaAsset $asset, string $reason): void
+    {
+        $asset->fill([
+            'status' => MediaAsset::STATUS_FAILED,
+            'failure_reason' => $reason,
+            'reservation_expires_at' => null,
+        ]);
+        $asset->save();
     }
 
     private function conflictQuery(array $attributes): Builder

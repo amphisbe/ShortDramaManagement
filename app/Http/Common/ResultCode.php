@@ -38,6 +38,9 @@ enum ResultCode: int
     #[Message('result.not_found')]
     case NOT_FOUND = 404;
 
+    #[Message('result.conflict')]
+    case CONFLICT = 409;
+
     #[Message('result.method_not_allowed')]
     case METHOD_NOT_ALLOWED = 405;
 
