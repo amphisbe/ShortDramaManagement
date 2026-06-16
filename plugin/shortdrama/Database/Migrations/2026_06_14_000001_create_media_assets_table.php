@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 use Hyperf\Database\Migrations\Migration;
 use Hyperf\Database\Schema\Blueprint;
-use Hyperf\Database\Schema\Schema;
+use Hyperf\DbConnection\Db;
 
 final class CreateMediaAssetsTable extends Migration
 {
     public function up(): void
     {
-        Schema::connection('drama')->create('media_assets', static function (Blueprint $table): void {
+        Db::connection('drama')->getSchemaBuilder()->create('media_assets', static function (Blueprint $table): void {
             $table->bigIncrements('id');
             $table->unsignedInteger('episode_id')->nullable()->unique();
             $table->string('bucket', 128);
@@ -29,6 +29,6 @@ final class CreateMediaAssetsTable extends Migration
 
     public function down(): void
     {
-        Schema::connection('drama')->dropIfExists('media_assets');
+        Db::connection('drama')->getSchemaBuilder()->dropIfExists('media_assets');
     }
 }

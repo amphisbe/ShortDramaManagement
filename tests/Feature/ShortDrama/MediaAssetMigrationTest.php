@@ -18,7 +18,8 @@ final class MediaAssetMigrationTest extends TestCase
         self::assertFileExists($path);
         $source = file_get_contents($path);
 
-        self::assertStringContainsString("Schema::connection('drama')->create('media_assets'", $source);
+        self::assertStringContainsString("Db::connection('drama')->getSchemaBuilder()->create('media_assets'", $source);
+        self::assertStringNotContainsString('Schema::connection(', $source);
         self::assertStringContainsString("unsignedInteger('episode_id')->nullable()->unique()", $source);
         self::assertStringContainsString("string('object_key', 512)->unique()", $source);
         self::assertStringContainsString("char('sha256', 64)->unique()", $source);
